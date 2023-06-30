@@ -1,7 +1,6 @@
 
 
-
-# --------- Testing
+from jirawiki2docx import JiraWiki2Docx
 
 sample_jira_text = """Carried out an {color:#ff5630}analysis to {color}{color:#fff0b3}identify{color}{color:#ff5630} customers who{color} carried out POS/WEB (card) transactions during the period of +^*-_cash scarcity but subsequently_-*^+ stopped transacting on this *channel and map out the* *_transactional_* *behaviour* of _these_ *_customers_* _prior to and during_ cash scarcity.
 
