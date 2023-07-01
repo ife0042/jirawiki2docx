@@ -20,7 +20,7 @@ class JiraWiki2Docx():
 	def __init__(self, jira_text=None, document=None):
 		self.jira_text = jira_text
 		self.document = document if document else Document()
-		self.table_style = ''
+		self.table_style = 'Table Grid'
 
 
 	def detect_jira_block_type(jira_block):
@@ -301,7 +301,7 @@ class JiraWiki2Docx():
 		# if save_to_file is set to true, save updated document as file in the set path
 		if save_to_file == True:
 			self.document.save(output_filename)
-			
+
 		return self.document
 
 
