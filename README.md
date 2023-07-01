@@ -71,9 +71,7 @@ This is another paragraph.
 # Create an instance of JiraWiki2Docx and parse the Jira wiki text
 converter = JiraWiki2Docx(jira_text, document)
 
-# Parse Jira markup and convert to Word document
-converter.parseJira2Docx()
-# Save the document to a file 
+# Parse Jira markup and convert to Word document with optional arguments to save created/modified document to file or just return as object
 converter.parseJira2Docx(save_to_file=True, output_filename="output.docx")
 ```
 

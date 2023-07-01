@@ -301,7 +301,7 @@ class JiraWiki2Docx():
 		# if save_to_file is set to true, save updated document as file in the set path
 		if save_to_file == True:
 			self.document.save(output_filename)
-
-		return self.document
+		else:
+			return self.document
 
 
