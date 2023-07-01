@@ -291,15 +291,17 @@ class JiraWiki2Docx():
 			return None
 
 
-	def parseJira2Docx(self):
+	def parseJira2Docx(self, save_to_file = False, output_filename = "output.docx"):
+		
+		# writing to docx
 		self.get_jira_blocks()
 		for block in self.jira_blocks:
 			self.write_jira_block_to_doc(block, self.document)
+
+		# if save_to_file is set to true, save updated document as file in the set path
+		if save_to_file == True:
+			self.document.save(output_filename)
+			
 		return self.document
 
-
-	def writeJira2Docx(self, output_filename = "output.docx"):
-		self.output_filename = output_filename
-		self.parseJira2Docx()
-		self.document.save(self.output_filename)
 
