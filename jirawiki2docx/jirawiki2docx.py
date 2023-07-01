@@ -2,9 +2,8 @@ import re
 from docx import Document
 from docx.shared import RGBColor
 from enum import Enum
-from src.jirawiki2docx.helpers import color_name_to_hex
+import webcolors
 
-TABLE_STYLE = "Table Grid"
 
 
 class JiraWikiBlockTypes(Enum):
@@ -91,7 +90,7 @@ class JiraWiki2Docx():
 				if row_index == 0:
 					n_cols = len(jira_cells_text)
 					table = doc_part_to_write_to.add_table(rows=1, cols=n_cols)
-					table.style = TABLE_STYLE
+					table.style = self.table_style
 				else:
 					table.add_row()
 
@@ -265,7 +264,7 @@ class JiraWiki2Docx():
 						if color_match:
 							hex_code = color_match.groups()[0]
 							if not hex_code.startswith("#"):
-								hex_code = color_name_to_hex(hex_code)
+								hex_code = JiraWiki2Docx.color_name_to_hex(hex_code)
 							if hex_code:
 								current_run.font.color.rgb = RGBColor.from_string(hex_code.strip("#"))
 
@@ -276,6 +275,20 @@ class JiraWiki2Docx():
 					prev_end_pos = end_pos_outside_markup
 		else:
 			docx_element.add_run(text)
+
+
+	@staticmethod
+	def color_name_to_hex(color_name):
+		try:
+			# Get the RGB values for the given color name
+			rgb = webcolors.name_to_rgb(color_name)
+			# Convert the RGB values to a hex code
+			hex_code = "#{:02x}{:02x}{:02x}".format(rgb.red, rgb.green, rgb.blue)
+			return hex_code
+		except ValueError:
+			# Handle the case when an invalid color name is provided
+			print("Invalid color name.")
+			return None
 
 
 	def parseJira2Docx(self):
@@ -289,3 +302,4 @@ class JiraWiki2Docx():
 		self.output_filename = output_filename
 		self.parseJira2Docx()
 		self.document.save(self.output_filename)
+
