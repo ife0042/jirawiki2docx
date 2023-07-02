@@ -248,7 +248,7 @@ class JiraWiki2Docx():
 					if tag == "*":
 						current_run.bold = True
 					elif tag == "_":
-						current_run.style = "Emphasis"
+						current_run.italic = True
 					elif tag == "-":
 						current_run.font.strike = True
 					elif tag == "+":
