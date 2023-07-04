@@ -1,9 +1,10 @@
+from copy import copy
 import re
 from docx import Document
 from docx.shared import RGBColor
 from enum import Enum
 import webcolors
-
+import docx
 
 
 class JiraWikiBlockTypes(Enum):
@@ -17,22 +18,51 @@ class JiraWikiBlockTypes(Enum):
 
 class JiraWiki2Docx():
 
-	def __init__(self, jira_text=None, document=None):
+	def __init__(self, jira_text=None, docx_container_element=None):
 		self.jira_text = jira_text
-		self.document = document if document else Document()
+		self.docx_container_element = docx_container_element if docx_container_element else Document()
 		self.table_style = 'Table Grid'
+		self.bullet_style = 'List Bullet'
+		self.number_style = 'List Number'
 
 
+	def docx_container_element_validator(self):
+		# Check if an object is a document
+		if isinstance(self.docx_container_element, docx.document.Document):
+			return
+		# Check if an object is a table cell
+		if isinstance(self.docx_container_element, docx.table._Cell):
+			return
+		# Check if an object is a header
+		if isinstance(self.docx_container_element, docx.section._Header):
+			return
+		# Check if an object is a footer
+		if isinstance(self.docx_container_element, docx.section._Footer):
+			return
+		raise Exception("Document element passed cannot be written to")
+		
+
+	def container_element_styles_validator(self):
+		# check if essential styles are available in the document object
+		bullet_styles = [self.bullet_style] + [f'{self.bullet_style} {i}' for i in range(2,4)]
+		number_styles = [self.number_style] + [f'{self.number_style} {i}' for i in range(2,4)]
+		essential_styles = bullet_styles + number_styles + [self.table_style]
+		for style in essential_styles:
+			if not style in map(lambda s:s.name, self.top_level_document.styles):
+				raise Exception('"%s" style is missing in the template document' % style)
+
+
+	@staticmethod
 	def detect_jira_block_type(jira_block):
 		jira_block_trimmed = jira_block.strip()
-		marker_heading = r"^h([1-6])\..*$"
-		marker_list = "^[*#-]+\s.*$"
-		marker_table = "^[||]+.*$"
-		if re.match(marker_heading, jira_block_trimmed, re.DOTALL):
+		detect_heading_pattern = r"^h([1-6])\..*$"
+		detect_list_pattern = "^[*#-]+\s.*$"
+		detect_table_pattern = "^[||]+.*$"
+		if re.match(detect_heading_pattern, jira_block_trimmed, re.DOTALL):
 			return JiraWikiBlockTypes.HEADING
-		if re.match(marker_list, jira_block_trimmed, re.DOTALL):
+		if re.match(detect_list_pattern, jira_block_trimmed, re.DOTALL):
 			return JiraWikiBlockTypes.LIST
-		if re.match(marker_table, jira_block_trimmed, re.DOTALL):
+		if re.match(detect_table_pattern, jira_block_trimmed, re.DOTALL):
 			return JiraWikiBlockTypes.TABLE
 		return JiraWikiBlockTypes.PARAGRAPH
 
@@ -62,7 +92,7 @@ class JiraWiki2Docx():
 			# issue 3: sublevel list have unwanted top space to their parent list
 			max_list_level = 3
 			style_name = (
-					"List Number" if list_type[:max_list_level][-1] == "#" else "List Bullet"
+				self.number_style if list_type[:max_list_level][-1] == "#" else self.bullet_style
 			)
 			style_name = f'{style_name} {str(min(len(list_type), max_list_level)) if len(list_type) > 1 else ""}'.strip()
 			para.style = style_name
@@ -291,17 +321,29 @@ class JiraWiki2Docx():
 			return None
 
 
+	@property
+	def top_level_document(self):
+		if not isinstance(self.docx_container_element, docx.document.Document):
+			return self.docx_container_element.part.document
+		return self.docx_container_element
+
+
 	def parseJira2Docx(self, save_to_file = False, output_filename = "output.docx"):
 		
+		# check if the container element is writable
+		self.docx_container_element_validator()
+		# check if the container element has essential styles 
+		self.container_element_styles_validator()
+
 		# writing to docx
 		self.get_jira_blocks()
 		for block in self.jira_blocks:
-			self.write_jira_block_to_doc(block, self.document)
+			self.write_jira_block_to_doc(block, self.docx_container_element)
 
 		# if save_to_file is set to true, save updated document as file in the set path
 		if save_to_file == True:
-			self.document.save(output_filename)
+			self.top_level_document.save(output_filename)
 		else:
-			return self.document
+			return self.docx_container_element
 
 
