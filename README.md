@@ -1,4 +1,3 @@
-
 # JiraWiki2Docx
 
 JiraWiki2Docx is a Python 3 library that converts Jira wiki text to Microsoft Word (docx) format. It provides a convenient way to migrate Jira wiki content to Word documents, allowing users to preserve the formatting and structure of their Jira wiki pages.
@@ -7,7 +6,9 @@ JiraWiki2Docx is a Python 3 library that converts Jira wiki text to Microsoft Wo
 
 You can install jirawiki2docx using pip:
 
-`pip install jirawiki2docx` 
+```
+pip install jirawiki2docx
+``` 
 
 ## Usage
 
@@ -15,9 +16,12 @@ To use jirawiki2docx, follow these steps:
 
 1.  Import the JiraWiki2Docx class:
 
-	`from jirawiki2docx import JiraWiki2Docx` 
+	```
+    from jirawiki2docx import JiraWiki2Docx
+    ``` 
 
 2.  Create an instance of the JiraWiki2Docx class, providing the Jira wiki text as input:
+
 	```
 	jira_text = "Your Jira wiki text here..."
 	converter = JiraWiki2Docx(jira_text)
@@ -25,11 +29,15 @@ To use jirawiki2docx, follow these steps:
 
 3.  Parse the Jira wiki text and generate the Word document:
 
-	`document = converter.parseJira2Docx()` 
+	```
+    document = converter.parseJira2Docx()
+    ```
 
 4.  Optionally, save the resulting document to a file:
 
-	`converter.parseJira2Docx(save_to_file=True, output_filename="output.docx")`
+	```
+    converter.parseJira2Docx(save_to_file=True, output_filename="output.docx")
+    ```
 
 5. Alternatively, you can use an existing `docx.Document` object and append the converted Jira wiki text to it's content:
 
@@ -66,7 +74,7 @@ This is another paragraph.
 """
 
 # Create a Document object
-`document = Document()`
+document = Document()
 
 # Create an instance of JiraWiki2Docx and parse the Jira wiki text
 converter = JiraWiki2Docx(jira_text, document)
